@@ -4,24 +4,25 @@ using System.Collections;
 public class PlayerScriptCameraFollow : MonoBehaviour
 {
 
-    public GameObject player;       //Public variable to store a reference to the player game object
-    public Camera thiscamera;
+    public GameObject Player;
+    public float SmothingSpeed = 0.125f;
+    public Vector3 offset;   
 
-    private Vector3 offset;         //Private variable to store the offset distance between the player and camera
 
-    // Use this for initialization
     void Start()
     {
-        thiscamera = Camera.main;
 
-        //Calculate and store the offset value by getting the distance between the player's position and camera's position.
-        offset = transform.position - player.transform.position;
+        offset = transform.position - Player.transform.position;
     }
 
     // LateUpdate is called after Update each frame
-    void LateUpdate()
+    void FixedUpdate()
     {
+        Vector3 desiredPosition = Player.transform.position + offset;
+        Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, SmothingSpeed);
         // Set the position of the camera's transform to be the same as the player's, but offset by the calculated offset distance.
-        transform.position = player.transform.position + offset;
+        transform.position = smoothedPosition;
+
+       // transform.LookAt(Player.transform); activate for 3D
     }
 }
