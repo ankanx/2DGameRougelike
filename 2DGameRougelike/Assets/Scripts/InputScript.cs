@@ -20,7 +20,7 @@ public class InputScript : MonoBehaviour
 	private float gravityStore;
 
 
-    private bool grounded = false;
+    private bool grounded = true;
     private Animator anim;
     private Rigidbody2D rb2d;
 
@@ -77,18 +77,25 @@ public class InputScript : MonoBehaviour
 		float v = Input.GetAxis ("Vertical");
 
         anim.SetFloat("Speed", Mathf.Abs(h));
-
-        if (Input.GetAxis("Horizontal") == 0 && grounded)
-                 {
+        /*
+        if ((Input.GetAxis("Horizontal") == 0 && Input.GetAxis("Vertical") == 0)  && grounded)
+          {
           rb2d.velocity = new Vector2(0, 0);
           
-        }
+        }*/
+
 
         if (h * rb2d.velocity.x < maxSpeed)
             rb2d.AddForce(Vector2.right * h * moveForce);
 
         if (Mathf.Abs(rb2d.velocity.x) > maxSpeed)
             rb2d.velocity = new Vector2(Mathf.Sign(rb2d.velocity.x) * maxSpeed, rb2d.velocity.y);
+
+        if (v * rb2d.velocity.y < maxSpeed)
+            rb2d.AddForce(Vector2.up * v * moveForce);
+
+        if (Mathf.Abs(rb2d.velocity.y) > maxSpeed)
+            rb2d.velocity = new Vector2(rb2d.velocity.x, Mathf.Sign(rb2d.velocity.y) * maxSpeed);
 
         if (h > 0 && !facingRight)
             Flip();
