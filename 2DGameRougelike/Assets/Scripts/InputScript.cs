@@ -10,62 +10,43 @@ public class InputScript : MonoBehaviour
     public bool jump = false;
     public float moveForce = 365f;
     public float maxSpeed = 5f;
-    public float jumpForce = 1000f;
-    public Transform groundCheck;
     public Canvas menu;
 
-	public bool onLadder;
-	public float climbSpeed;
-	private float climbVelocity;
 	private float gravityStore;
 
 
     private bool grounded = true;
-    private Animator anim;
-    private Rigidbody2D rb2d;
+    private Animator animator;
+    private Rigidbody2D rigidbody2d;
 
     //public PlayerHealth playerHp;
 
     public AudioClip audio_jump;
     public AudioClip audio_walk;
-    public AudioClip audio_ladder;
-
     public AudioSource audio_source;
 
 
     // Use this for initialization
     void Awake()
     {
-        anim = GetComponent<Animator>();
-        rb2d = GetComponent<Rigidbody2D>();
-		gravityStore = rb2d.gravityScale;
+        animator = GetComponent<Animator>();
+        rigidbody2d = GetComponent<Rigidbody2D>();
+		gravityStore = rigidbody2d.gravityScale;
        // playerHp = GetComponent<PlayerHealth>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        grounded = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
-
-
-        if (grounded)
-        {
-            
-            anim.SetBool("jumpcomplete", true);
-        }
-        else
-        {
-            anim.SetBool("jumpcomplete", false);
-        }
         if (Input.GetButtonDown("Jump") && grounded)
         {
             jump = true;
         }
 
-        if(Input.GetButtonDown("Menu") && !menu.gameObject.active)
+        if(Input.GetButtonDown("Cancel") && !menu.gameObject.active)
         {
             menu.gameObject.SetActive(true);
-        }else if(Input.GetButtonDown("Menu") && menu.gameObject.active)
+        }else if(Input.GetButtonDown("Cancel") && menu.gameObject.active)
         {
             menu.gameObject.SetActive(false);
         }
@@ -76,7 +57,21 @@ public class InputScript : MonoBehaviour
         float h = Input.GetAxis("Horizontal");
 		float v = Input.GetAxis ("Vertical");
 
-        anim.SetFloat("Speed", Mathf.Abs(h));
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            Debug.Log("in");
+            GameObject.FindGameObjectWithTag("ScreenFading").GetComponent<Animator>().SetTrigger("FadeIn");
+
+        }
+
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            Debug.Log("Out");
+            GameObject.FindGameObjectWithTag("ScreenFading").GetComponent<Animator>().SetTrigger("FadeOut");
+        }
+
+
+        animator.SetFloat("Speed", Mathf.Abs(h));
         /*
         if ((Input.GetAxis("Horizontal") == 0 && Input.GetAxis("Vertical") == 0)  && grounded)
           {
@@ -85,18 +80,19 @@ public class InputScript : MonoBehaviour
         }*/
 
 
-        if (h * rb2d.velocity.x < maxSpeed)
-            rb2d.AddForce(Vector2.right * h * moveForce);
+        if (h * rigidbody2d.velocity.x < maxSpeed)
+            rigidbody2d.AddForce(Vector2.right * h * moveForce);
 
-        if (Mathf.Abs(rb2d.velocity.x) > maxSpeed)
-            rb2d.velocity = new Vector2(Mathf.Sign(rb2d.velocity.x) * maxSpeed, rb2d.velocity.y);
+        if (Mathf.Abs(rigidbody2d.velocity.x) > maxSpeed)
+            rigidbody2d.velocity = new Vector2(Mathf.Sign(rigidbody2d.velocity.x) * maxSpeed, rigidbody2d.velocity.y);
 
-        if (v * rb2d.velocity.y < maxSpeed)
-            rb2d.AddForce(Vector2.up * v * moveForce);
+        if (v * rigidbody2d.velocity.y < maxSpeed)
+            rigidbody2d.AddForce(Vector2.up * v * moveForce);
 
-        if (Mathf.Abs(rb2d.velocity.y) > maxSpeed)
-            rb2d.velocity = new Vector2(rb2d.velocity.x, Mathf.Sign(rb2d.velocity.y) * maxSpeed);
+        if (Mathf.Abs(rigidbody2d.velocity.y) > maxSpeed)
+            rigidbody2d.velocity = new Vector2(rigidbody2d.velocity.x, Mathf.Sign(rigidbody2d.velocity.y) * maxSpeed);
 
+        // Remove when octagonal fix
         if (h > 0 && !facingRight)
             Flip();
         else if (h < 0 && facingRight)
@@ -105,27 +101,8 @@ public class InputScript : MonoBehaviour
         if (jump)
         {
             //audio_source.PlayOneShot(audio_jump, 0.5f);
-            anim.SetTrigger("Jump");
-            rb2d.AddForce(new Vector2(0f, jumpForce));
-            jump = false;
+            animator.SetTrigger("Jump");
         }
-
-		if (onLadder) {
-
-            climbVelocity = climbSpeed * v;
-			if (h != 0) {
-				rb2d.gravityScale = gravityStore;
-			} else {
-				if (climbVelocity != 0) {
-                    //audio_source.PlayOneShot(audio_ladder, 0.1f);
-                    rb2d.gravityScale = 0f;
-					rb2d.velocity = new Vector2 (rb2d.velocity.x, climbVelocity);
-				}
-			}
-		}
-		if (!onLadder) {
-			rb2d.gravityScale = gravityStore;
-		}
     }
 
 
