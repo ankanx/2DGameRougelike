@@ -8,6 +8,8 @@ TagManager:
   - Inventory
   - InventoryUi
   - MiniMap
+  - Chat
+  - NetworkSpawning
   layers:
   - Default
   - TransparentFX

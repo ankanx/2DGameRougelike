@@ -47,14 +47,14 @@ public class PlayerConnectionObject : NetworkBehaviour {
             return;
         }
 
-        if( Input.GetKeyDown(KeyCode.S) )
+        if( Input.GetKeyDown(KeyCode.T) )
         {
             CmdSpawnMyUnit();
         }
 
         if( Input.GetKeyDown(KeyCode.Q) )
         {
-            string n = "Quill" + Random.Range(1, 100);
+            string n = "Ankan" + Random.Range(1, 100);
 
             Debug.Log("Sending the server a request to change our name to: " + n);
             CmdChangePlayerName(n);

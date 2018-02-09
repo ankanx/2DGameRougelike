@@ -8,7 +8,6 @@ public class InputScript : NetworkBehaviour
     [HideInInspector]
     public bool facingRight = true;
     [HideInInspector]
-    public bool jump = false;
     public float moveForce = 365f;
     public float maxSpeed = 5f;
     public Canvas menu;
@@ -20,12 +19,12 @@ public class InputScript : NetworkBehaviour
     public AudioClip audio_jump;
     public AudioClip audio_walk;
     public AudioSource audio_source;
-
+    private GameObject chat;
 
 
     void Start()
     {
-
+        
         if (!hasAuthority)
         {
             Debug.Log("No Authority" + hasAuthority);
@@ -38,7 +37,9 @@ public class InputScript : NetworkBehaviour
 
     public override void OnStartAuthority()
     {
+
         GameObject.FindGameObjectWithTag("MiniMap").GetComponent<MiniMap>().enabled = true;
+        GameObject.FindGameObjectWithTag("MiniMap").GetComponent<MiniMap>().Player = gameObject.transform;
         GameObject.FindGameObjectWithTag("MainCamera").GetComponent<PlayerScriptCameraFollow>().enabled = true;
         GameObject.FindGameObjectWithTag("MainCamera").GetComponent<PlayerScriptCameraFollow>().Player = gameObject;
     }
@@ -47,14 +48,7 @@ public class InputScript : NetworkBehaviour
     void Update()
     {
 
-
-
-        if (Input.GetButtonDown("Jump") && grounded)
-        {
-            jump = true;
-        }
-
-        if(Input.GetButtonDown("Cancel") && !menu.gameObject.active)
+        if (Input.GetButtonDown("Cancel") && !menu.gameObject.active)
         {
             menu.gameObject.SetActive(true);
         }else if(Input.GetButtonDown("Cancel") && menu.gameObject.active)
@@ -97,22 +91,5 @@ public class InputScript : NetworkBehaviour
         if (Mathf.Abs(rigidbody2d.velocity.y) > maxSpeed)
             rigidbody2d.velocity = new Vector2(rigidbody2d.velocity.x, Mathf.Sign(rigidbody2d.velocity.y) * maxSpeed);
 
-        // Remove when octagonal fix
-        if (h > 0 && !facingRight)
-            Flip();
-        else if (h < 0 && facingRight)
-            Flip();
-
     }
-
-
-    void Flip()
-    {
-        facingRight = !facingRight;
-        Vector3 theScale = transform.localScale;
-        theScale.x *= -1;
-        transform.localScale = theScale;
-    }
-
-
 }

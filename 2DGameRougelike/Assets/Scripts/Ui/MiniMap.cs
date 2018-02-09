@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MiniMap : MonoBehaviour {
 
-    public Transform player;
+    public Transform Player;
 
     void Awake()
     {
@@ -13,16 +13,11 @@ public class MiniMap : MonoBehaviour {
 
     private void LateUpdate()
     {
-        if(player == null)
-        {
-            player = GameObject.FindGameObjectWithTag("Player").transform;
-        }else
-        {
-            Vector3 newPosition = player.position;
-            newPosition.y = transform.position.y;
+
+            Vector3 newPosition = Player.position;
             newPosition.z = -30;
             transform.position = newPosition;
-        }
+        
 
 
         // Add buttons that changes projecttion size for zoom etc
