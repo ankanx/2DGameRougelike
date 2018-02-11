@@ -14,13 +14,29 @@ public class MiniMap : MonoBehaviour {
     private void LateUpdate()
     {
 
-            Vector3 newPosition = Player.position;
-            newPosition.z = -30;
+            Vector3 newPosition = new Vector3(Player.position.x, Player.position.y, transform.position.z);
+            
+            transform.position = newPosition;
+
+    }
+
+    public void zoomIn()
+    {
+
+            Vector3 newPosition = transform.position;
+            newPosition.z = transform.position.z - 5;
             transform.position = newPosition;
         
 
-
-        // Add buttons that changes projecttion size for zoom etc
     }
 
-}
+    public void zoomOut()
+    {
+
+            Vector3 newPosition = transform.position;
+            newPosition.z = transform.position.z + 5;
+            transform.position = newPosition;
+        
+    }
+ }
+    
