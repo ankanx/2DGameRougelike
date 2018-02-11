@@ -2,15 +2,40 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.Networking.NetworkSystem;
+using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerConnectionObject : NetworkBehaviour {
+    public GameObject PlayerUnitPrefab;
 
-	// Use this for initialization
-	void Start () {
+    // SyncVars are variables where if their value changes on the SERVER, then all clients
+    // are automatically informed of the new value.
+    [SyncVar(hook = "OnPlayerNameChanged")]
+    public string PlayerName = "Anonymous";
+    /*
+    public override void OnStartClient()
+    {
+        if (hasAuthority)
+        {
+            PlayerName = GameObject.FindGameObjectWithTag("Demo").GetComponent<demo>().myname;
+            CmdChangePlayerName(PlayerName);
+        }
+    }*/
+
+    public override void OnStartAuthority()
+    {
+        PlayerName = GameObject.FindGameObjectWithTag("Demo").GetComponent<demo>().myname;
+        CmdChangePlayerName(PlayerName);
+    }
+    // Use this for initialization
+    void Start () {
+         
         // Is this actually my own local PlayerConnectionObject?
-        if( isLocalPlayer == false )
+        if ( isLocalPlayer == false )
         {
             // This object belongs to another player.
+            gameObject.tag = "Untagged";
             return;
         }
 
@@ -30,12 +55,7 @@ public class PlayerConnectionObject : NetworkBehaviour {
         CmdSpawnMyUnit();
 	}
 
-    public GameObject PlayerUnitPrefab;
 
-    // SyncVars are variables where if their value changes on the SERVER, then all clients
-    // are automatically informed of the new value.
-    [SyncVar(hook="OnPlayerNameChanged")]
-    public string PlayerName = "Anonymous";
 	
 	// Update is called once per frame
 	void Update () {
@@ -100,6 +120,12 @@ public class PlayerConnectionObject : NetworkBehaviour {
         //    ... or do we still call the Rpc but with the original name?
 
         PlayerName = n;
+        StringMessage myMessage = new StringMessage();
+        //getting the value of the input
+        myMessage.value = "UNETbroadcastConnected" + PlayerName;
+
+        //sending to server
+        NetworkManager.singleton.client.Send(131, myMessage);
 
         // Tell all the client what this player's name now is.
         //RpcChangePlayerName(PlayerName);

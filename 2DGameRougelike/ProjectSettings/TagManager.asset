@@ -10,6 +10,9 @@ TagManager:
   - MiniMap
   - Chat
   - NetworkSpawning
+  - Demo
+  - MainMenu
+  - PlayerMenu
   layers:
   - Default
   - TransparentFX
