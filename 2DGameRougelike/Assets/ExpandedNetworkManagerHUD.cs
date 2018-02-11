@@ -22,10 +22,22 @@ public class ExpandedNetworkManagerHUD : NetworkManagerHUD {
         manager.StartHost();
     }
 
-    public void JoinGame()
+    public static void JoinGame()
     {
+        // seems to be the only way to fix this?
+        GameObject mainmenu = GameObject.FindGameObjectWithTag("MainMenu");
+        InputField ip = mainmenu.transform.Find("IP").GetComponent<InputField>();
         NetworkManager.singleton.networkPort = 7777;
-        NetworkManager.singleton.networkAddress = "127.0.0.1";
+        
+        if (ip.text != "")
+        {
+            Debug.Log("ex");
+            NetworkManager.singleton.networkAddress = ip.text;
+        }
+        else
+        {
+            NetworkManager.singleton.networkAddress = "127.0.0.1";
+        }
         NetworkManager.singleton.StartClient();
     }
 
@@ -55,6 +67,7 @@ public class ExpandedNetworkManagerHUD : NetworkManagerHUD {
     {
         if(level == 0)
         {
+
             mainmenu = GameObject.FindGameObjectWithTag("MainMenu");
             SetupMainMenuButtons();
         }else
@@ -74,19 +87,18 @@ public class ExpandedNetworkManagerHUD : NetworkManagerHUD {
         mainmenu.transform.Find("Start Host Button").GetComponent<Button>().onClick.AddListener(StartLocalHost);
 
         mainmenu.transform.Find("Join Game Button").GetComponent<Button>().onClick.RemoveAllListeners();
-        mainmenu.transform.Find("Join Game Button").GetComponent<Button>().onClick.AddListener(JoinGame);
+        mainmenu.transform.Find("Join Game Button").GetComponent<Button>().onClick.AddListener(ExpandedNetworkManagerHUD.JoinGame);
     }
 
     public void SetupPlayerMenuButtons()
     {
         if (!NetworkManager.singleton.IsClientConnected())
         {
-            Debug.Log("I am the host");
+
             mainmenu.transform.Find("Return Button").GetComponent<Button>().onClick.RemoveAllListeners();
             mainmenu.transform.Find("Return Button").GetComponent<Button>().onClick.AddListener(NetworkManager.singleton.StopHost);
         }else
         {
-            Debug.Log("I not am the host");
             mainmenu.transform.Find("Return Button").GetComponent<Button>().onClick.RemoveAllListeners();
             mainmenu.transform.Find("Return Button").GetComponent<Button>().onClick.AddListener(NetworkManager.singleton.StopClient);
         }
