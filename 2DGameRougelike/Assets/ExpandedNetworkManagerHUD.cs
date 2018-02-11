@@ -17,9 +17,9 @@ public class ExpandedNetworkManagerHUD : NetworkManagerHUD {
 
     }
 
-    public void StartLocalHost()
+    public static void StartLocalHost()
     {
-        manager.StartHost();
+        NetworkManager.singleton.StartHost();
     }
 
     public static void JoinGame()
@@ -84,7 +84,7 @@ public class ExpandedNetworkManagerHUD : NetworkManagerHUD {
     public void SetupMainMenuButtons()
     {
         mainmenu.transform.Find("Start Host Button").GetComponent<Button>().onClick.RemoveAllListeners();
-        mainmenu.transform.Find("Start Host Button").GetComponent<Button>().onClick.AddListener(StartLocalHost);
+        mainmenu.transform.Find("Start Host Button").GetComponent<Button>().onClick.AddListener(ExpandedNetworkManagerHUD.StartLocalHost);
 
         mainmenu.transform.Find("Join Game Button").GetComponent<Button>().onClick.RemoveAllListeners();
         mainmenu.transform.Find("Join Game Button").GetComponent<Button>().onClick.AddListener(ExpandedNetworkManagerHUD.JoinGame);
@@ -94,13 +94,14 @@ public class ExpandedNetworkManagerHUD : NetworkManagerHUD {
     {
         if (!NetworkManager.singleton.IsClientConnected())
         {
-
-            mainmenu.transform.Find("Return Button").GetComponent<Button>().onClick.RemoveAllListeners();
-            mainmenu.transform.Find("Return Button").GetComponent<Button>().onClick.AddListener(NetworkManager.singleton.StopHost);
-        }else
-        {
+            Debug.Log("im client");
             mainmenu.transform.Find("Return Button").GetComponent<Button>().onClick.RemoveAllListeners();
             mainmenu.transform.Find("Return Button").GetComponent<Button>().onClick.AddListener(NetworkManager.singleton.StopClient);
+        }else
+        {
+            Debug.Log("im Host");
+            mainmenu.transform.Find("Return Button").GetComponent<Button>().onClick.RemoveAllListeners();
+            mainmenu.transform.Find("Return Button").GetComponent<Button>().onClick.AddListener(NetworkManager.singleton.StopHost);
         }
         mainmenu.transform.Find("Exit Button").GetComponent<Button>().onClick.RemoveAllListeners();
         mainmenu.transform.Find("Exit Button").GetComponent<Button>().onClick.AddListener(ExitApplication);

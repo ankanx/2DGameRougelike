@@ -23,9 +23,15 @@ public class demo : MonoBehaviour {
         playernameinput = mainmenu.transform.Find("PlayerName").GetComponent<InputField>();
 
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    private void OnLevelWasLoaded(int level)
+    {
+        mainmenu = GameObject.FindGameObjectWithTag("MainMenu");
+        playernameinput = mainmenu.transform.Find("PlayerName").GetComponent<InputField>();
+    }
+
+    // Update is called once per frame
+    void Update () {
         
         if(playernameinput.text != "")
         {
