@@ -80,7 +80,7 @@ public class UNETChat : Chat
         ChatMessage deserialised = JsonConvert.DeserializeObject<ChatMessage> (message.ReadMessage<StringMessage>().value);
         if (deserialised.IsBroadCast)
         {
-            myMessage.value = deserialised.SenderName + " has connected.";
+            myMessage.value = deserialised.SenderName + deserialised.Message;
         }else
         {
             myMessage.value = "[" + deserialised.SenderName + "]: " + deserialised.Message;

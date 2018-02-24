@@ -13,15 +13,6 @@ public class PlayerConnectionObject : NetworkBehaviour {
     // are automatically informed of the new value.
     [SyncVar(hook = "OnPlayerNameChanged")]
     public string PlayerName = "Anonymous";
-    /*
-    public override void OnStartClient()
-    {
-        if (hasAuthority)
-        {
-            PlayerName = GameObject.FindGameObjectWithTag("Demo").GetComponent<demo>().myname;
-            CmdChangePlayerName(PlayerName);
-        }
-    }*/
 
     public override void OnStartAuthority()
     {
@@ -122,7 +113,7 @@ public class PlayerConnectionObject : NetworkBehaviour {
         PlayerName = n;
         StringMessage myMessage = new StringMessage();
         //getting the value of the input
-        myMessage.value = JsonConvert.SerializeObject(new ChatMessage(Network.player.externalIP, PlayerName, "Connected", true));
+        myMessage.value = JsonConvert.SerializeObject(new ChatMessage(Network.player.externalIP, PlayerName, " has connected.", true));
 
 
         //sending to server
@@ -135,11 +126,19 @@ public class PlayerConnectionObject : NetworkBehaviour {
     //////////////////////////// RPC
     // RPCs are special functions that ONLY get executed on the clients.
 
-/*    [ClientRpc]
-    void RpcChangePlayerName(string n)
-    {
-        Debug.Log("RpcChangePlayerName: We were asked to change the player name on a particular PlayerConnectionObject: " + n);
-        PlayerName = n;
-    }
+    /*    [ClientRpc]
+        void RpcChangePlayerName(string n)
+        {
+            Debug.Log("RpcChangePlayerName: We were asked to change the player name on a particular PlayerConnectionObject: " + n);
+            PlayerName = n;
+        }
 
-*/}
+    */
+
+    private void OnDestroy()
+    {
+        StringMessage myMessage = new StringMessage();
+        myMessage.value = JsonConvert.SerializeObject(new ChatMessage(Network.player.externalIP, PlayerName, " has disconnected.", true));
+        NetworkManager.singleton.client.Send(131, myMessage);
+    }
+}
