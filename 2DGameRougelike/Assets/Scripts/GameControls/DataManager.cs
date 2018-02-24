@@ -7,6 +7,8 @@ using System;
 
 public class DataManager : MonoBehaviour {
 
+    public Transform content = null;
+    public GameObject SavePrefab = null;
 
     public List<SaveData> LoadAllExistingSaves()
     {
@@ -51,6 +53,31 @@ public class DataManager : MonoBehaviour {
             data = null;
         }
         return data;
+    }
+
+    public void updateUI(List<SaveData> SaveList)
+    {
+
+        foreach (SaveData save in SaveList)
+        {
+            string SaveName = save.SaveName;
+            DateTime Time = save.LastSave;
+            string CharacterName = save.CharacterName;
+            GenerateSaveEntry(SaveName,Time,CharacterName, () =>
+            {
+                // load the data <<
+            });
+        }
+    }
+
+    public void GenerateSaveEntry(string SaveName,DateTime Time, string CharacterName, UnityEngine.Events.UnityAction callback)
+    {
+        var Save = Instantiate(SavePrefab);
+        Save.transform.SetParent(content);
+        var SaveContent = Save.GetComponent<SaveDataItem>();
+        if (SaveContent != null)
+            SaveContent.SetData(SaveName,Time,CharacterName, callback);
+
     }
 
 
