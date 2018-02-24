@@ -5,6 +5,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
 
 public class UNETChat : Chat
 {
@@ -28,7 +31,11 @@ public class UNETChat : Chat
             }
             
         }
-        
+
+        if (inputfield.isFocused)
+        {
+            playerRigidbody.bodyType = RigidbodyType2D.Static;
+        }
 
         // Maybe Change
         if (Input.GetKeyDown(KeyCode.Return) && inputfield.text.Length > 0)
@@ -64,23 +71,22 @@ public class UNETChat : Chat
 		//reading message
 		string text = message.ReadMessage<StringMessage> ().value;
 
-		AddMessage (text);
+		AddMessage(text);
 	}
 
 	private void ServerReceiveMessage(NetworkMessage message)
 	{
 		StringMessage myMessage = new StringMessage ();
-        string messageRecived = message.ReadMessage<StringMessage>().value;
+        ChatMessage deserialised = JsonConvert.DeserializeObject<ChatMessage> (message.ReadMessage<StringMessage>().value);
+        if (deserialised.IsBroadCast)
+        {
+            myMessage.value = deserialised.SenderName + " has connected.";
+        }else
+        {
+            myMessage.value = "[" + deserialised.SenderName + "]: " + deserialised.Message;
+        }
         //we are using the connectionId as player name only to exemplify
         //myMessage.value = message.conn.connectionId + ": " + message.ReadMessage<StringMessage> ().value;
-        if (messageRecived.Contains("UNETbroadcastConnected"))
-        {
-            myMessage.value = messageRecived.Replace("UNETbroadcastConnected", "") + " has connected.";
-        }
-        else
-        {
-            myMessage.value = /*message.conn.connectionId + " " +*/ messageRecived;
-        }
 
         //sending to all connected clients
         NetworkServer.SendToAll (chatMessage, myMessage);
@@ -92,7 +98,8 @@ public class UNETChat : Chat
         {
             StringMessage myMessage = new StringMessage();
             //getting the value of the input
-            myMessage.value = GameObject.FindGameObjectWithTag("NetworkSpawning").GetComponent<PlayerConnectionObject>().PlayerName + ": " + input.text;
+            ChatMessage newMessage = new ChatMessage(Network.player.externalIP,GameObject.FindGameObjectWithTag("NetworkSpawning").GetComponent<PlayerConnectionObject>().PlayerName, input.text,false);
+            myMessage.value = JsonConvert.SerializeObject(newMessage);
 
             //sending to server
             NetworkManager.singleton.client.Send(chatMessage, myMessage);

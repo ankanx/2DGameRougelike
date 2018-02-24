@@ -22,20 +22,24 @@ public class MiniMap : MonoBehaviour {
 
     public void zoomIn()
     {
-
+        if (transform.position.z < (-5))
+        {
             Vector3 newPosition = transform.position;
-            newPosition.z = transform.position.z - 5;
+            newPosition.z = transform.position.z + 5;
             transform.position = newPosition;
+        }
         
 
     }
 
     public void zoomOut()
     {
-
+        if(transform.position.z > (-40))
+        {
             Vector3 newPosition = transform.position;
-            newPosition.z = transform.position.z + 5;
+            newPosition.z = transform.position.z - 5;
             transform.position = newPosition;
+        }
         
     }
  }

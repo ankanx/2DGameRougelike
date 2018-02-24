@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.Networking.NetworkSystem;
-using System.Collections;
-using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 public class PlayerConnectionObject : NetworkBehaviour {
     public GameObject PlayerUnitPrefab;
@@ -122,7 +122,8 @@ public class PlayerConnectionObject : NetworkBehaviour {
         PlayerName = n;
         StringMessage myMessage = new StringMessage();
         //getting the value of the input
-        myMessage.value = "UNETbroadcastConnected" + PlayerName;
+        myMessage.value = JsonConvert.SerializeObject(new ChatMessage(Network.player.externalIP, PlayerName, "Connected", true));
+
 
         //sending to server
         NetworkManager.singleton.client.Send(131, myMessage);
